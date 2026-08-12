@@ -9,6 +9,16 @@ services:
     restart: unless-stopped
     ports:
       - "8080:3000"
+    volumes:
+      - jcbb-data:/app/data
+    environment:
+      - DATABASE_URL=file:/app/data/jcbb.db
+      - NEXTAUTH_URL=https://junctioncityboxingbrigade.com
+      - NEXTAUTH_SECRET=${NEXTAUTH_SECRET}
+      - ADMIN_EMAIL=${ADMIN_EMAIL}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - COACH_EMAIL=${COACH_EMAIL}
+      - COACH_PASSWORD=${COACH_PASSWORD}
     networks:
       - jcbb-net
 
@@ -39,3 +49,6 @@ services:
 networks:
   jcbb-net:
     driver: bridge
+
+volumes:
+  jcbb-data:

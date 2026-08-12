@@ -1,8 +1,13 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { classes, site } from '@/lib/site-data';
+import { getSiteSettings } from '@/lib/settings';
 
-export default function HomePage() {
+export const dynamic = 'force-dynamic';
+
+export default async function HomePage() {
+  const settings = await getSiteSettings();
+
   return (
     <>
       <section className="relative overflow-hidden bg-jetblack">
@@ -21,7 +26,7 @@ export default function HomePage() {
           </h1>
           <p className="mt-2 text-base text-white/60 sm:text-lg">{site.name}</p>
           <p className="mt-6 max-w-xl text-xl font-semibold italic text-gold sm:text-2xl">
-            &ldquo;{site.tagline}&rdquo;
+            &ldquo;{settings.tagline}&rdquo;
           </p>
           <div className="mt-10 flex flex-col gap-4 sm:flex-row">
             <Link href="/contact" className="btn-gold">

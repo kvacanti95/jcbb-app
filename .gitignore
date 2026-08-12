@@ -18,8 +18,17 @@ yarn-debug.log*
 yarn-error.log*
 
 # local env files
+.env
 .env*.local
 
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+/lib/generated/prisma
+
+# local database + uploaded media (persisted via a Docker volume in production)
+*.db
+*.db-journal
+/prisma/*.db
+/data

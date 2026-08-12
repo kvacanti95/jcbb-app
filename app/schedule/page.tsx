@@ -1,12 +1,28 @@
 import type { Metadata } from 'next';
-import { schedule, site } from '@/lib/site-data';
+import { prisma } from '@/lib/db';
+import { site } from '@/lib/site-data';
 
 export const metadata: Metadata = {
   title: `Schedule | ${site.shortName}`,
   description: `Weekly class timetable for ${site.name}.`,
 };
 
-export default function SchedulePage() {
+export const dynamic = 'force-dynamic';
+
+const DAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+
+export default async function SchedulePage() {
+  const rows = await prisma.scheduleClass.findMany({
+    orderBy: [{ dayOfWeek: 'asc' }, { sortOrder: 'asc' }],
+  });
+
+  const schedule = DAY_NAMES.map((day, index) => ({
+    day,
+    classes: rows
+      .filter((row) => row.dayOfWeek === index)
+      .map((row) => ({ time: row.time, name: row.className, coach: row.coachName })),
+  }));
+
   return (
     <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
       <header className="text-center">
@@ -38,17 +54,19 @@ export default function SchedulePage() {
             <tr>
               {schedule.map((day) => (
                 <td key={day.day} className="align-top border-b border-white/10 px-4 py-4">
-                  <ul className="space-y-4">
-                    {day.classes.map((c, i) => (
-                      <li key={i}>
-                        <p className="text-sm font-semibold text-white">{c.time}</p>
-                        <p className="text-sm text-white/70">{c.name}</p>
-                        {c.coach !== '—' && (
+                  {day.classes.length === 0 ? (
+                    <p className="text-sm text-white/40">Rest day</p>
+                  ) : (
+                    <ul className="space-y-4">
+                      {day.classes.map((c, i) => (
+                        <li key={i}>
+                          <p className="text-sm font-semibold text-white">{c.time}</p>
+                          <p className="text-sm text-white/70">{c.name}</p>
                           <p className="text-xs text-white/40">{c.coach}</p>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </td>
               ))}
             </tr>
@@ -61,19 +79,21 @@ export default function SchedulePage() {
         {schedule.map((day) => (
           <div key={day.day} className="rounded-lg border border-white/10 bg-white/5 p-5">
             <h2 className="section-heading text-lg font-bold text-gold">{day.day}</h2>
-            <ul className="mt-3 space-y-3">
-              {day.classes.map((c, i) => (
-                <li key={i} className="flex items-baseline justify-between gap-4">
-                  <div>
-                    <p className="text-sm font-semibold text-white">{c.name}</p>
-                    {c.coach !== '—' && (
+            {day.classes.length === 0 ? (
+              <p className="mt-3 text-sm text-white/40">Rest day</p>
+            ) : (
+              <ul className="mt-3 space-y-3">
+                {day.classes.map((c, i) => (
+                  <li key={i} className="flex items-baseline justify-between gap-4">
+                    <div>
+                      <p className="text-sm font-semibold text-white">{c.name}</p>
                       <p className="text-xs text-white/40">{c.coach}</p>
-                    )}
-                  </div>
-                  <p className="whitespace-nowrap text-sm text-white/70">{c.time}</p>
-                </li>
-              ))}
-            </ul>
+                    </div>
+                    <p className="whitespace-nowrap text-sm text-white/70">{c.time}</p>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         ))}
       </div>

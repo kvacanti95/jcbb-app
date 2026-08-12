@@ -1,0 +1,74 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String
+  createdAt    DateTime @default(now())
+}
+
+model Event {
+  id             String      @id @default(cuid())
+  title          String
+  opponent       String?
+  eventDate      DateTime
+  location       String
+  description    String?
+  ticketLink     String?
+  posterImageUrl String?
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  media          MediaItem[]
+}
+
+model MediaItem {
+  id        String    @id @default(cuid())
+  url       String
+  filename  String
+  type      MediaType
+  caption   String?
+  eventId   String?
+  event     Event?    @relation(fields: [eventId], references: [id])
+  createdAt DateTime  @default(now())
+}
+
+enum MediaType {
+  IMAGE
+  VIDEO
+}
+
+model Coach {
+  id        String   @id @default(cuid())
+  name      String
+  role      String
+  bio       String
+  photoUrl  String?
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model ScheduleClass {
+  id        String   @id @default(cuid())
+  dayOfWeek Int
+  time      String
+  className String
+  coachName String
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SiteSetting {
+  key       String   @id
+  value     String
+  updatedAt DateTime @updatedAt
+}

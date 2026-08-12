@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import ContactForm from '@/components/ContactForm';
+import { getSiteSettings } from '@/lib/settings';
 import { site } from '@/lib/site-data';
 
 export const metadata: Metadata = {
@@ -7,7 +8,16 @@ export const metadata: Metadata = {
   description: `Get in touch with ${site.name}.`,
 };
 
-export default function ContactPage() {
+export const dynamic = 'force-dynamic';
+
+export default async function ContactPage() {
+  const settings = await getSiteSettings();
+  const socialLinks = [
+    { label: 'Instagram', href: settings.socialInstagram },
+    { label: 'Facebook', href: settings.socialFacebook },
+    { label: 'TikTok', href: settings.socialTiktok },
+  ].filter((link) => link.href);
+
   return (
     <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
       <header className="text-center">
@@ -28,55 +38,47 @@ export default function ContactPage() {
         <div className="space-y-8">
           <div>
             <h2 className="section-heading text-xl font-bold text-gold">Address</h2>
-            <p className="mt-2 text-white/80">{site.address}</p>
+            <p className="mt-2 text-white/80">{settings.contactAddress}</p>
           </div>
 
           <div>
             <h2 className="section-heading text-xl font-bold text-gold">Phone</h2>
             <a
-              href={`tel:${site.phone.replace(/[^\d+]/g, '')}`}
+              href={`tel:${settings.contactPhone.replace(/[^\d+]/g, '')}`}
               className="mt-2 block text-white/80 hover:text-gold"
             >
-              {site.phone}
+              {settings.contactPhone}
             </a>
           </div>
 
           <div>
             <h2 className="section-heading text-xl font-bold text-gold">Email</h2>
-            <a href={`mailto:${site.email}`} className="mt-2 block text-white/80 hover:text-gold">
-              {site.email}
+            <a
+              href={`mailto:${settings.contactEmail}`}
+              className="mt-2 block text-white/80 hover:text-gold"
+            >
+              {settings.contactEmail}
             </a>
           </div>
 
-          <div>
-            <h2 className="section-heading text-xl font-bold text-gold">Follow Along</h2>
-            <div className="mt-3 flex gap-4">
-              <a
-                href={site.social.instagram}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="rounded-md border border-white/20 px-4 py-2 text-sm text-white hover:border-gold hover:text-gold"
-              >
-                Instagram
-              </a>
-              <a
-                href={site.social.facebook}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="rounded-md border border-white/20 px-4 py-2 text-sm text-white hover:border-gold hover:text-gold"
-              >
-                Facebook
-              </a>
-              <a
-                href={site.social.tiktok}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="rounded-md border border-white/20 px-4 py-2 text-sm text-white hover:border-gold hover:text-gold"
-              >
-                TikTok
-              </a>
+          {socialLinks.length > 0 && (
+            <div>
+              <h2 className="section-heading text-xl font-bold text-gold">Follow Along</h2>
+              <div className="mt-3 flex gap-4">
+                {socialLinks.map((link) => (
+                  <a
+                    key={link.label}
+                    href={link.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="rounded-md border border-white/20 px-4 py-2 text-sm text-white hover:border-gold hover:text-gold"
+                  >
+                    {link.label}
+                  </a>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
 
           <div className="overflow-hidden rounded-lg border border-white/10">
             <iframe
@@ -84,7 +86,7 @@ export default function ContactPage() {
               className="h-64 w-full"
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"
-              src={`https://www.google.com/maps?q=${encodeURIComponent(site.address)}&output=embed`}
+              src={`https://www.google.com/maps?q=${encodeURIComponent(settings.contactAddress)}&output=embed`}
             />
           </div>
         </div>

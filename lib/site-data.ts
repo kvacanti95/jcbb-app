@@ -3,13 +3,13 @@ export const site = {
   shortName: 'JCBB',
   tagline: 'Put In The Work, Get Results',
   founded: 2025,
-  phone: '(785) 555-0142',
-  email: 'info@jcbboxing.com',
-  address: '412 W 6th St, Junction City, KS 66441',
+  phone: '(785) 223-2419',
+  email: 'jcboxingbrigade@gmail.com',
+  address: '815 South Adams Street, Junction City, KS 66441',
   social: {
-    instagram: 'https://instagram.com/jcbboxing',
-    facebook: 'https://facebook.com/jcbboxing',
-    tiktok: 'https://tiktok.com/@jcbboxing',
+    instagram: 'https://instagram.com/junctioncityboxingbrigade',
+    facebook: '',
+    tiktok: '',
   },
 };
 
@@ -18,6 +18,7 @@ export const navLinks = [
   { href: '/about', label: 'About' },
   { href: '/classes', label: 'Classes' },
   { href: '/schedule', label: 'Schedule' },
+  { href: '/events', label: 'Events' },
   { href: '/gallery', label: 'Gallery' },
   { href: '/contact', label: 'Contact' },
 ];

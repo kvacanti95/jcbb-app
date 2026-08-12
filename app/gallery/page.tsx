@@ -1,4 +1,6 @@
 import type { Metadata } from 'next';
+import Image from 'next/image';
+import { prisma } from '@/lib/db';
 import { site } from '@/lib/site-data';
 
 export const metadata: Metadata = {
@@ -6,19 +8,11 @@ export const metadata: Metadata = {
   description: `Photos from inside ${site.name}.`,
 };
 
-const gallery = [
-  'Heavy Bag Work',
-  'Coach Pad Drills',
-  'Sparring Night',
-  'Youth Class',
-  'Fight Night 2025',
-  'Conditioning Circuit',
-  'New Member Day',
-  'Team Photo',
-  'Ring Time',
-];
+export const dynamic = 'force-dynamic';
 
-export default function GalleryPage() {
+export default async function GalleryPage() {
+  const media = await prisma.mediaItem.findMany({ orderBy: { createdAt: 'desc' } });
+
   return (
     <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
       <header className="text-center">
@@ -31,31 +25,38 @@ export default function GalleryPage() {
         </p>
       </header>
 
-      <div className="mt-14 grid grid-cols-2 gap-4 sm:grid-cols-3">
-        {gallery.map((caption, i) => (
-          <div
-            key={caption}
-            className="group relative aspect-square overflow-hidden rounded-lg border border-white/10"
-            style={{
-              background:
-                i % 2 === 0
-                  ? 'linear-gradient(135deg, #6b3fa0 0%, #1a1a1a 100%)'
-                  : 'linear-gradient(135deg, #c9a84c 0%, #1a1a1a 100%)',
-            }}
-          >
-            <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 transition-opacity group-hover:opacity-100">
-              <p className="section-heading px-3 text-center text-sm font-semibold text-white">
-                {caption}
-              </p>
+      {media.length === 0 ? (
+        <p className="mt-14 text-center text-sm text-white/40">
+          Photos coming soon — check back or follow us on social media for the latest from the
+          gym.
+        </p>
+      ) : (
+        <div className="mt-14 grid grid-cols-2 gap-4 sm:grid-cols-3">
+          {media.map((item) => (
+            <div
+              key={item.id}
+              className="group relative aspect-square overflow-hidden rounded-lg border border-white/10 bg-white/5"
+            >
+              {item.type === 'VIDEO' ? (
+                // eslint-disable-next-line jsx-a11y/media-has-caption
+                <video src={item.url} className="h-full w-full object-cover" controls />
+              ) : (
+                <Image
+                  src={item.url}
+                  alt={item.caption ?? 'JCBB gallery photo'}
+                  fill
+                  className="object-cover"
+                />
+              )}
+              {item.caption && (
+                <div className="absolute inset-0 flex items-end bg-gradient-to-t from-black/70 via-transparent to-transparent p-3 opacity-0 transition-opacity group-hover:opacity-100">
+                  <p className="text-sm font-semibold text-white">{item.caption}</p>
+                </div>
+              )}
             </div>
-          </div>
-        ))}
-      </div>
-
-      <p className="mt-10 text-center text-sm text-white/40">
-        Photos coming soon — check back or follow us on social media for the latest from the
-        gym.
-      </p>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
