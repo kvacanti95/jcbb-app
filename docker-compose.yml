@@ -1,0 +1,41 @@
+version: "3.9"
+
+services:
+
+  # ── JCBB Next.js App ──────────────────────────────────────────────────────
+  web:
+    image: ghcr.io/kvacanti95/jcbb-app:latest
+    container_name: jcbb-web
+    restart: unless-stopped
+    ports:
+      - "8080:3000"
+    networks:
+      - jcbb-net
+
+  # ── Cloudflare Tunnel ─────────────────────────────────────────────────────
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: jcbb-cloudflared
+    restart: unless-stopped
+    command: tunnel --no-autoupdate run --token ${CLOUDFLARE_TUNNEL_TOKEN}
+    networks:
+      - jcbb-net
+    depends_on:
+      - web
+
+  # ── Watchtower (auto-pull new images) ────────────────────────────────────
+  watchtower:
+    image: containrrr/watchtower
+    container_name: jcbb-watchtower
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - WATCHTOWER_CLEANUP=true
+      - WATCHTOWER_POLL_INTERVAL=300
+    networks:
+      - jcbb-net
+
+networks:
+  jcbb-net:
+    driver: bridge
