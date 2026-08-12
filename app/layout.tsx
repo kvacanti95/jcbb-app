@@ -23,6 +23,12 @@ export const metadata: Metadata = {
   description: `${site.name} — ${site.tagline}. Boxing classes for all levels in Junction City, KS.`,
 };
 
+// The root layout reads live, database-backed settings (banner, tagline)
+// on every request, so nothing under it can be statically prerendered —
+// this makes that explicit instead of relying on each page to opt out
+// individually.
+export const dynamic = 'force-dynamic';
+
 export default async function RootLayout({
   children,
 }: {

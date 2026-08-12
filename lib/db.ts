@@ -1,9 +1,13 @@
 import { PrismaBetterSqlite3 } from '@prisma/adapter-better-sqlite3';
 import { PrismaClient } from './generated/prisma/client';
 
+type ExtendedPrismaClient = ReturnType<typeof buildExtendedClient>;
+
 declare global {
   // eslint-disable-next-line no-var
   var __prismaRaw: PrismaClient | undefined;
+  // eslint-disable-next-line no-var
+  var __prismaExtended: ExtendedPrismaClient | undefined;
   // eslint-disable-next-line no-var
   var __bootstrapPromise: Promise<void> | undefined;
 }
@@ -17,18 +21,17 @@ function createRawClient() {
   return new PrismaClient({ adapter });
 }
 
-// Used only by lib/schema-bootstrap.ts, which must bypass the bootstrap-guard
-// extension below to avoid deadlocking on itself.
-export const rawPrisma = globalThis.__prismaRaw ?? createRawClient();
-
-if (process.env.NODE_ENV !== 'production') {
-  globalThis.__prismaRaw = rawPrisma;
+function getRawClient(): PrismaClient {
+  if (!globalThis.__prismaRaw) {
+    globalThis.__prismaRaw = createRawClient();
+  }
+  return globalThis.__prismaRaw;
 }
 
-function ensureBootstrapped(): Promise<void> {
+function ensureBootstrapped(raw: PrismaClient): Promise<void> {
   if (!globalThis.__bootstrapPromise) {
     globalThis.__bootstrapPromise = import('./schema-bootstrap').then((m) =>
-      m.bootstrapDatabase(rawPrisma),
+      m.bootstrapDatabase(raw),
     );
   }
   return globalThis.__bootstrapPromise;
@@ -38,11 +41,32 @@ function ensureBootstrapped(): Promise<void> {
 // standalone` builds (confirmed empirically), so schema bootstrap instead
 // runs lazily, once, before the first real query — no dependency on that
 // Next.js feature working correctly in this deployment target.
-export const prisma = rawPrisma.$extends({
-  query: {
-    async $allOperations({ args, query }) {
-      await ensureBootstrapped();
-      return query(args);
+function buildExtendedClient(raw: PrismaClient) {
+  return raw.$extends({
+    query: {
+      async $allOperations({ args, query }) {
+        await ensureBootstrapped(raw);
+        return query(args);
+      },
     },
+  });
+}
+
+function getExtendedClient(): ExtendedPrismaClient {
+  if (!globalThis.__prismaExtended) {
+    globalThis.__prismaExtended = buildExtendedClient(getRawClient());
+  }
+  return globalThis.__prismaExtended;
+}
+
+// A Proxy defers actually constructing the client (and reading
+// DATABASE_URL) until a query is really made. Next's build-time
+// "collecting page data" step imports every route module — including
+// this one, transitively, via lib/auth.ts — without executing anything,
+// and that environment has no DATABASE_URL. Constructing the client
+// eagerly at module scope would break the production build.
+export const prisma = new Proxy({} as ExtendedPrismaClient, {
+  get(_target, prop, receiver) {
+    return Reflect.get(getExtendedClient() as object, prop, receiver);
   },
 });
