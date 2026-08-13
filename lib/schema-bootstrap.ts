@@ -97,6 +97,7 @@ async function createTables(db: PrismaClient) {
       "wins" INTEGER NOT NULL DEFAULT 0,
       "losses" INTEGER NOT NULL DEFAULT 0,
       "draws" INTEGER NOT NULL DEFAULT 0,
+      "kos" INTEGER NOT NULL DEFAULT 0,
       "bio" TEXT NOT NULL,
       "photoUrl" TEXT,
       "sortOrder" INTEGER NOT NULL DEFAULT 0,
@@ -105,6 +106,9 @@ async function createTables(db: PrismaClient) {
       "updatedAt" DATETIME NOT NULL
     )
   `);
+  // Fighter already existed before "kos" was added — same in-place
+  // migration approach as User.role above.
+  await ensureColumn(db, 'Fighter', 'kos', `"kos" INTEGER NOT NULL DEFAULT 0`);
 
   await db.$executeRawUnsafe(`
     CREATE TABLE IF NOT EXISTS "Page" (
@@ -113,10 +117,13 @@ async function createTables(db: PrismaClient) {
       "title" TEXT NOT NULL,
       "body" TEXT NOT NULL,
       "photoUrl" TEXT,
+      "published" INTEGER NOT NULL DEFAULT 1,
       "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
       "updatedAt" DATETIME NOT NULL
     )
   `);
+  // Page already existed before "published" was added.
+  await ensureColumn(db, 'Page', 'published', `"published" INTEGER NOT NULL DEFAULT 1`);
 }
 
 async function upsertAdminAccounts(db: PrismaClient) {

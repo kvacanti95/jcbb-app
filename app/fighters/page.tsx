@@ -55,6 +55,7 @@ export default async function FightersPage() {
               <p className="text-sm font-semibold text-gold">{fighter.weightClass}</p>
               <p className="mt-1 text-sm text-white/50">
                 {fighter.wins}-{fighter.losses}-{fighter.draws}
+                {fighter.kos > 0 && ` (${fighter.kos} KOs)`}
               </p>
               <p className="mt-3 text-white/70">{fighter.bio}</p>
             </div>

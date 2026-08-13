@@ -1,9 +1,13 @@
+import { weightClasses } from '@/lib/site-data';
+import ImageCropInput from './ImageCropInput';
+
 type FighterFormValues = {
   name: string;
   weightClass: string;
   wins: number;
   losses: number;
   draws: number;
+  kos: number;
   bio: string;
 };
 
@@ -38,19 +42,26 @@ export default function FighterForm({
           <label htmlFor="weightClass" className="mb-1.5 block text-sm font-semibold text-white">
             Weight Class
           </label>
-          <input
+          <select
             id="weightClass"
             name="weightClass"
-            type="text"
             required
-            placeholder="Welterweight"
-            defaultValue={initialValues?.weightClass}
+            defaultValue={initialValues?.weightClass ?? ''}
             className="w-full rounded-md border border-white/20 bg-white/5 px-4 py-2.5 text-white outline-none focus:border-gold"
-          />
+          >
+            <option value="" disabled>
+              Select a weight class
+            </option>
+            {weightClasses.map((wc) => (
+              <option key={wc} value={wc}>
+                {wc}
+              </option>
+            ))}
+          </select>
         </div>
       </div>
 
-      <div className="grid gap-5 grid-cols-3">
+      <div className="grid grid-cols-2 gap-5 sm:grid-cols-4">
         <div>
           <label htmlFor="wins" className="mb-1.5 block text-sm font-semibold text-white">
             Wins
@@ -90,6 +101,19 @@ export default function FighterForm({
             className="w-full rounded-md border border-white/20 bg-white/5 px-4 py-2.5 text-white outline-none focus:border-gold"
           />
         </div>
+        <div>
+          <label htmlFor="kos" className="mb-1.5 block text-sm font-semibold text-white">
+            KOs
+          </label>
+          <input
+            id="kos"
+            name="kos"
+            type="number"
+            min={0}
+            defaultValue={initialValues?.kos ?? 0}
+            className="w-full rounded-md border border-white/20 bg-white/5 px-4 py-2.5 text-white outline-none focus:border-gold"
+          />
+        </div>
       </div>
 
       <div>
@@ -106,26 +130,7 @@ export default function FighterForm({
         />
       </div>
 
-      <div>
-        <label htmlFor="photo" className="mb-1.5 block text-sm font-semibold text-white">
-          Photo <span className="text-white/40">(optional)</span>
-        </label>
-        {existingPhotoUrl && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={existingPhotoUrl}
-            alt="Current photo"
-            className="mb-2 h-32 w-32 rounded-md object-cover"
-          />
-        )}
-        <input
-          id="photo"
-          name="photo"
-          type="file"
-          accept="image/*"
-          className="w-full rounded-md border border-white/20 bg-white/5 px-4 py-2.5 text-white outline-none focus:border-gold"
-        />
-      </div>
+      <ImageCropInput name="photo" label="Photo" existingPhotoUrl={existingPhotoUrl} />
 
       <button type="submit" className="btn-gold">
         {submitLabel}

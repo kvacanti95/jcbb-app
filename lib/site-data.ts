@@ -24,6 +24,26 @@ export const navLinks = [
   { href: '/contact', label: 'Contact' },
 ];
 
+export const weightClasses = [
+  'Strawweight',
+  'Light Flyweight',
+  'Flyweight',
+  'Super Flyweight',
+  'Bantamweight',
+  'Super Bantamweight',
+  'Featherweight',
+  'Super Featherweight',
+  'Lightweight',
+  'Super Lightweight',
+  'Welterweight',
+  'Super Welterweight',
+  'Middleweight',
+  'Super Middleweight',
+  'Light Heavyweight',
+  'Cruiserweight',
+  'Heavyweight',
+];
+
 export type ClassInfo = {
   name: string;
   description: string;

@@ -61,3 +61,10 @@ export async function deletePage(id: string) {
   revalidatePath('/admin/pages');
   revalidatePath('/', 'layout');
 }
+
+export async function togglePagePublished(id: string, published: boolean) {
+  await prisma.page.update({ where: { id }, data: { published } });
+
+  revalidatePath('/admin/pages');
+  revalidatePath('/', 'layout');
+}

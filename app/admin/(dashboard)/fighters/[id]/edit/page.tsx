@@ -21,6 +21,7 @@ export default async function EditFighterPage({ params }: { params: { id: string
             wins: fighter.wins,
             losses: fighter.losses,
             draws: fighter.draws,
+            kos: fighter.kos,
             bio: fighter.bio,
           }}
         />

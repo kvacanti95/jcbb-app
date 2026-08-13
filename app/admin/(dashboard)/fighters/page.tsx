@@ -27,6 +27,7 @@ export default async function AdminFightersPage() {
               <p className="font-semibold text-white">{fighter.name}</p>
               <p className="text-sm text-white/60">
                 {fighter.weightClass} &middot; {fighter.wins}-{fighter.losses}-{fighter.draws}
+                {fighter.kos > 0 && ` (${fighter.kos} KOs)`}
               </p>
             </div>
             <div className="flex gap-3">

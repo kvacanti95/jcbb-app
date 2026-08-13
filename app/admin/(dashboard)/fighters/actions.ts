@@ -11,6 +11,7 @@ function readFighterFields(formData: FormData) {
   const wins = Number(formData.get('wins') ?? 0);
   const losses = Number(formData.get('losses') ?? 0);
   const draws = Number(formData.get('draws') ?? 0);
+  const kos = Number(formData.get('kos') ?? 0);
   const bio = String(formData.get('bio') ?? '').trim();
 
   if (!name || !weightClass || !bio) {
@@ -23,6 +24,7 @@ function readFighterFields(formData: FormData) {
     wins: Number.isFinite(wins) ? wins : 0,
     losses: Number.isFinite(losses) ? losses : 0,
     draws: Number.isFinite(draws) ? draws : 0,
+    kos: Number.isFinite(kos) ? kos : 0,
     bio,
   };
 }

@@ -37,7 +37,11 @@ export default async function RootLayout({
 }) {
   const [settings, pages] = await Promise.all([
     getSiteSettings(),
-    prisma.page.findMany({ orderBy: { title: 'asc' }, select: { slug: true, title: true } }),
+    prisma.page.findMany({
+      where: { published: true },
+      orderBy: { title: 'asc' },
+      select: { slug: true, title: true },
+    }),
   ]);
   const extraLinks = pages.map((page) => ({ href: `/${page.slug}`, label: page.title }));
 

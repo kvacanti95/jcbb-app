@@ -36,6 +36,7 @@ export default async function MyProfilePage() {
             wins: fighter.wins,
             losses: fighter.losses,
             draws: fighter.draws,
+            kos: fighter.kos,
             bio: fighter.bio,
           }}
         />

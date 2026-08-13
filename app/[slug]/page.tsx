@@ -6,8 +6,9 @@ import { site } from '@/lib/site-data';
 
 export const dynamic = 'force-dynamic';
 
-async function getPage(slug: string) {
-  return prisma.page.findUnique({ where: { slug } });
+async function getPublishedPage(slug: string) {
+  const page = await prisma.page.findUnique({ where: { slug } });
+  return page?.published ? page : null;
 }
 
 export async function generateMetadata({
@@ -15,7 +16,7 @@ export async function generateMetadata({
 }: {
   params: { slug: string };
 }): Promise<Metadata> {
-  const page = await getPage(params.slug);
+  const page = await getPublishedPage(params.slug);
   if (!page) return {};
   return {
     title: `${page.title} | ${site.shortName}`,
@@ -23,7 +24,7 @@ export async function generateMetadata({
 }
 
 export default async function CustomPage({ params }: { params: { slug: string } }) {
-  const page = await getPage(params.slug);
+  const page = await getPublishedPage(params.slug);
   if (!page) notFound();
 
   const paragraphs = page.body.split(/\n\s*\n/);

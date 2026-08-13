@@ -42,6 +42,7 @@ export default function AdminLoginPage() {
             id="email"
             name="email"
             type="email"
+            autoComplete="email"
             required
             className="w-full rounded-md border border-white/20 bg-white/5 px-4 py-2.5 text-white outline-none focus:border-gold"
           />
@@ -54,6 +55,7 @@ export default function AdminLoginPage() {
             id="password"
             name="password"
             type="password"
+            autoComplete="current-password"
             required
             className="w-full rounded-md border border-white/20 bg-white/5 px-4 py-2.5 text-white outline-none focus:border-gold"
           />

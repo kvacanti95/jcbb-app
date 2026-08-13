@@ -86,6 +86,7 @@ model Fighter {
   wins        Int      @default(0)
   losses      Int      @default(0)
   draws       Int      @default(0)
+  kos         Int      @default(0)
   bio         String
   photoUrl    String?
   sortOrder   Int      @default(0)
@@ -100,6 +101,7 @@ model Page {
   title     String
   body      String
   photoUrl  String?
+  published Boolean  @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
