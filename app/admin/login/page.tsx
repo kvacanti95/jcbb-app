@@ -17,6 +17,7 @@ export default function AdminLoginPage() {
     const form = event.currentTarget;
     const email = (form.elements.namedItem('email') as HTMLInputElement).value;
     const password = (form.elements.namedItem('password') as HTMLInputElement).value;
+    const rememberMe = (form.elements.namedItem('rememberMe') as HTMLInputElement).checked;
 
     const result = await signIn('credentials', { email, password, redirect: false });
 
@@ -24,6 +25,12 @@ export default function AdminLoginPage() {
       setError('Invalid email or password.');
       setSubmitting(false);
       return;
+    }
+
+    if (!rememberMe) {
+      // Downgrade the session cookie NextAuth just set to a session-only
+      // cookie, so it clears when the browser fully closes.
+      await fetch('/api/auth/session-persistence', { method: 'POST' });
     }
 
     router.push('/admin');
@@ -59,6 +66,19 @@ export default function AdminLoginPage() {
             required
             className="w-full rounded-md border border-white/20 bg-white/5 px-4 py-2.5 text-white outline-none focus:border-gold"
           />
+        </div>
+
+        <div className="flex items-center gap-2">
+          <input
+            id="rememberMe"
+            name="rememberMe"
+            type="checkbox"
+            defaultChecked
+            className="h-4 w-4"
+          />
+          <label htmlFor="rememberMe" className="text-sm text-white">
+            Remember me on this device
+          </label>
         </div>
 
         {error && <p className="text-sm text-red-400">{error}</p>}
