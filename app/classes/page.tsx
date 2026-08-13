@@ -1,11 +1,14 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { classes, site } from '@/lib/site-data';
+import { prisma } from '@/lib/db';
+import { site } from '@/lib/site-data';
 
 export const metadata: Metadata = {
   title: `Classes | ${site.shortName}`,
   description: `Boxing classes for every level at ${site.name}.`,
 };
+
+export const dynamic = 'force-dynamic';
 
 const levelStyles: Record<string, string> = {
   Beginner: 'bg-purple/20 text-purple',
@@ -16,7 +19,9 @@ const levelStyles: Record<string, string> = {
   Competitive: 'bg-gold/20 text-gold',
 };
 
-export default function ClassesPage() {
+export default async function ClassesPage() {
+  const classes = await prisma.class.findMany({ orderBy: { sortOrder: 'asc' } });
+
   return (
     <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
       <header className="text-center">
@@ -33,7 +38,7 @@ export default function ClassesPage() {
       <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {classes.map((cls) => (
           <div
-            key={cls.name}
+            key={cls.id}
             className="flex flex-col rounded-lg border border-white/10 bg-white/5 p-6 transition-transform hover:-translate-y-1 hover:border-gold/40"
           >
             <div className="flex items-start justify-between gap-2">

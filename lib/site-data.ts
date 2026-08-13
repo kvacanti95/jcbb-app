@@ -44,6 +44,15 @@ export const weightClasses = [
   'Heavyweight',
 ];
 
+export const classLevels = [
+  'Beginner',
+  'Intermediate',
+  'Advanced',
+  'All Levels',
+  'Youth',
+  'Competitive',
+];
+
 export type ClassInfo = {
   name: string;
   description: string;

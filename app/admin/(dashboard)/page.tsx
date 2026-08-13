@@ -2,15 +2,18 @@ import Link from 'next/link';
 import { prisma } from '@/lib/db';
 
 export default async function AdminDashboardPage() {
-  const [eventCount, mediaCount, coachCount, fighterCount, pageCount] = await Promise.all([
-    prisma.event.count(),
-    prisma.mediaItem.count(),
-    prisma.coach.count(),
-    prisma.fighter.count(),
-    prisma.page.count(),
-  ]);
+  const [classCount, eventCount, mediaCount, coachCount, fighterCount, pageCount] =
+    await Promise.all([
+      prisma.class.count(),
+      prisma.event.count(),
+      prisma.mediaItem.count(),
+      prisma.coach.count(),
+      prisma.fighter.count(),
+      prisma.page.count(),
+    ]);
 
   const cards = [
+    { label: 'Classes', count: classCount, href: '/admin/classes' },
     { label: 'Upcoming & Past Events', count: eventCount, href: '/admin/events' },
     { label: 'Photos & Videos', count: mediaCount, href: '/admin/media' },
     { label: 'Coaches', count: coachCount, href: '/admin/coaches' },
@@ -37,6 +40,11 @@ export default async function AdminDashboardPage() {
       <div className="mt-10 rounded-lg border border-white/10 bg-white/5 p-6">
         <h2 className="section-heading text-lg font-bold text-white">Quick links</h2>
         <ul className="mt-3 space-y-2 text-sm">
+          <li>
+            <Link href="/admin/classes/new" className="text-gold hover:underline">
+              Add a new class type
+            </Link>
+          </li>
           <li>
             <Link href="/admin/events/new" className="text-gold hover:underline">
               Add an upcoming fight

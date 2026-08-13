@@ -1,13 +1,15 @@
 import { prisma } from '@/lib/db';
-import { classes } from '@/lib/site-data';
 import { addScheduleClass, deleteScheduleClass } from './actions';
 
 const DAY_NAMES = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
 export default async function AdminSchedulePage() {
-  const rows = await prisma.scheduleClass.findMany({
-    orderBy: [{ dayOfWeek: 'asc' }, { sortOrder: 'asc' }],
-  });
+  const [rows, classes] = await Promise.all([
+    prisma.scheduleClass.findMany({
+      orderBy: [{ dayOfWeek: 'asc' }, { sortOrder: 'asc' }],
+    }),
+    prisma.class.findMany({ orderBy: { sortOrder: 'asc' } }),
+  ]);
 
   const byDay = DAY_NAMES.map((day, index) => ({
     day,
@@ -67,7 +69,7 @@ export default async function AdminSchedulePage() {
               className="w-full rounded-md border border-white/20 bg-white/5 px-4 py-2.5 text-white outline-none focus:border-gold"
             >
               {classes.map((cls) => (
-                <option key={cls.name} value={cls.name}>
+                <option key={cls.id} value={cls.name}>
                   {cls.name}
                 </option>
               ))}

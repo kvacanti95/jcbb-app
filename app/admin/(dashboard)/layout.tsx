@@ -5,6 +5,7 @@ import SignOutButton from '@/components/SignOutButton';
 
 const adminLinks = [
   { href: '/admin', label: 'Dashboard' },
+  { href: '/admin/classes', label: 'Classes' },
   { href: '/admin/events', label: 'Events' },
   { href: '/admin/media', label: 'Media' },
   { href: '/admin/coaches', label: 'Coaches' },

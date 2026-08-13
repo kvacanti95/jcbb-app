@@ -1,6 +1,10 @@
 import bcrypt from 'bcryptjs';
 import type { PrismaClient } from './generated/prisma/client';
-import { coaches as defaultCoaches, schedule as defaultSchedule } from './site-data';
+import {
+  classes as defaultClasses,
+  coaches as defaultCoaches,
+  schedule as defaultSchedule,
+} from './site-data';
 
 const DAY_ORDER = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
@@ -124,6 +128,19 @@ async function createTables(db: PrismaClient) {
   `);
   // Page already existed before "published" was added.
   await ensureColumn(db, 'Page', 'published', `"published" INTEGER NOT NULL DEFAULT 1`);
+
+  await db.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS "Class" (
+      "id" TEXT PRIMARY KEY,
+      "name" TEXT NOT NULL,
+      "description" TEXT NOT NULL,
+      "level" TEXT NOT NULL,
+      "duration" TEXT NOT NULL,
+      "sortOrder" INTEGER NOT NULL DEFAULT 0,
+      "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      "updatedAt" DATETIME NOT NULL
+    )
+  `);
 }
 
 async function upsertAdminAccounts(db: PrismaClient) {
@@ -181,12 +198,31 @@ async function seedScheduleIfEmpty(db: PrismaClient) {
   }
 }
 
+async function seedClassesIfEmpty(db: PrismaClient) {
+  const count = await db.class.count();
+  if (count > 0) return;
+
+  for (let i = 0; i < defaultClasses.length; i++) {
+    const cls = defaultClasses[i];
+    await db.class.create({
+      data: {
+        name: cls.name,
+        description: cls.description,
+        level: cls.level,
+        duration: cls.duration,
+        sortOrder: i,
+      },
+    });
+  }
+}
+
 export async function bootstrapDatabase(db: PrismaClient) {
   try {
     await createTables(db);
     await upsertAdminAccounts(db);
     await seedCoachesIfEmpty(db);
     await seedScheduleIfEmpty(db);
+    await seedClassesIfEmpty(db);
     console.log('[bootstrap] Database schema ready.');
   } catch (err) {
     console.error('[bootstrap] Failed to bootstrap database:', err);

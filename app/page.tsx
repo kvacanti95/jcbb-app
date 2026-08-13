@@ -1,12 +1,13 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { classes, site } from '@/lib/site-data';
+import { site } from '@/lib/site-data';
 import { getSiteSettings } from '@/lib/settings';
+import { prisma } from '@/lib/db';
 
 export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
-  const settings = await getSiteSettings();
+  const [settings, classCount] = await Promise.all([getSiteSettings(), prisma.class.count()]);
 
   return (
     <>
@@ -44,7 +45,7 @@ export default async function HomePage() {
           <div className="grid gap-6 sm:grid-cols-3">
             {[
               { label: 'Founded', value: String(site.founded) },
-              { label: 'Class Types', value: `${classes.length}+` },
+              { label: 'Class Types', value: `${classCount}+` },
               { label: 'Skill Levels', value: 'All Welcome' },
             ].map((stat) => (
               <div
