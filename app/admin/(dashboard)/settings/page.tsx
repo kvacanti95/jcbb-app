@@ -41,6 +41,31 @@ function Field({
   );
 }
 
+function ColorField({
+  label,
+  name,
+  defaultValue,
+}: {
+  label: string;
+  name: string;
+  defaultValue: string;
+}) {
+  return (
+    <div>
+      <label htmlFor={name} className="mb-1.5 block text-sm font-semibold text-white">
+        {label}
+      </label>
+      <input
+        id={name}
+        name={name}
+        type="color"
+        defaultValue={defaultValue}
+        className="h-10 w-20 cursor-pointer rounded-md border border-white/20 bg-white/5 p-1"
+      />
+    </div>
+  );
+}
+
 export default async function AdminSettingsPage() {
   const settings = await getSiteSettings();
 
@@ -49,7 +74,7 @@ export default async function AdminSettingsPage() {
       <h1 className="section-heading text-3xl font-bold text-white">Site Settings</h1>
       <form action={saveSettings} className="mt-8 max-w-2xl space-y-10">
         <section className="rounded-lg border border-white/10 bg-white/5 p-6">
-          <h2 className="section-heading text-lg font-bold text-gold">Under-Construction Banner</h2>
+          <h2 className="section-heading text-lg font-bold text-gold">Site Banner</h2>
           <div className="mt-4 flex items-center gap-2">
             <input
               id="banner_enabled"
@@ -65,6 +90,18 @@ export default async function AdminSettingsPage() {
           </div>
           <div className="mt-4">
             <Field label="Banner message" name="banner_message" defaultValue={settings.bannerMessage} />
+          </div>
+          <div className="mt-4 flex gap-6">
+            <ColorField
+              label="Background color"
+              name="banner_bg_color"
+              defaultValue={settings.bannerBgColor}
+            />
+            <ColorField
+              label="Text color"
+              name="banner_text_color"
+              defaultValue={settings.bannerTextColor}
+            />
           </div>
         </section>
 

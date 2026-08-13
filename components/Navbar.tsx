@@ -33,35 +33,17 @@ export default function Navbar({ extraLinks = [] }: { extraLinks?: NavLink[] }) 
           type="button"
           aria-label="Toggle menu"
           aria-expanded={open}
-          className="flex h-10 w-10 flex-col items-center justify-center gap-1.5 md:hidden"
+          className="flex h-10 w-10 flex-col items-center justify-center gap-1.5"
           onClick={() => setOpen((v) => !v)}
         >
           <span className={`h-0.5 w-6 bg-white transition ${open ? 'translate-y-2 rotate-45' : ''}`} />
           <span className={`h-0.5 w-6 bg-white transition ${open ? 'opacity-0' : ''}`} />
           <span className={`h-0.5 w-6 bg-white transition ${open ? '-translate-y-2 -rotate-45' : ''}`} />
         </button>
-
-        <ul className="hidden items-center gap-8 md:flex">
-          {links.map((link) => {
-            const active = pathname === link.href;
-            return (
-              <li key={link.href}>
-                <Link
-                  href={link.href}
-                  className={`section-heading text-sm transition-colors ${
-                    active ? 'text-gold' : 'text-white hover:text-gold'
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
       </nav>
 
       {open && (
-        <ul className="flex flex-col gap-1 border-t border-white/10 bg-jetblack px-4 pb-4 md:hidden">
+        <ul className="border-t border-white/10 bg-jetblack px-4 pb-4 sm:mx-auto sm:max-w-xs sm:px-6">
           {links.map((link) => {
             const active = pathname === link.href;
             return (

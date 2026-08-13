@@ -5,6 +5,8 @@ import { updateSiteSettings, type SettingsKey } from '@/lib/settings';
 
 const TEXT_KEYS: SettingsKey[] = [
   'banner_message',
+  'banner_bg_color',
+  'banner_text_color',
   'tagline',
   'about_story',
   'about_mission',

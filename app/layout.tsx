@@ -48,7 +48,13 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={`${oswald.variable} ${inter.variable} font-body flex min-h-screen flex-col`}>
-        {settings.bannerEnabled && <Banner message={settings.bannerMessage} />}
+        {settings.bannerEnabled && (
+          <Banner
+            message={settings.bannerMessage}
+            bgColor={settings.bannerBgColor}
+            textColor={settings.bannerTextColor}
+          />
+        )}
         <Navbar extraLinks={extraLinks} />
         <main className="flex-1">{children}</main>
         <Footer />

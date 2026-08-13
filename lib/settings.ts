@@ -16,6 +16,8 @@ export const SETTINGS_DEFAULTS = {
   social_tiktok: site.social.tiktok,
   banner_enabled: 'true',
   banner_message: "We're updating our site with new features — thanks for your patience!",
+  banner_bg_color: '#c9a84c',
+  banner_text_color: '#1a1a1a',
 } as const;
 
 export type SettingsKey = keyof typeof SETTINGS_DEFAULTS;
@@ -32,6 +34,8 @@ export type SiteSettings = {
   socialTiktok: string;
   bannerEnabled: boolean;
   bannerMessage: string;
+  bannerBgColor: string;
+  bannerTextColor: string;
 };
 
 export const getSiteSettings = cache(async (): Promise<SiteSettings> => {
@@ -55,6 +59,8 @@ export const getSiteSettings = cache(async (): Promise<SiteSettings> => {
     socialTiktok: values.social_tiktok,
     bannerEnabled: values.banner_enabled === 'true',
     bannerMessage: values.banner_message,
+    bannerBgColor: values.banner_bg_color,
+    bannerTextColor: values.banner_text_color,
   };
 });
 

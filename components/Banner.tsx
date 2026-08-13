@@ -1,6 +1,17 @@
-export default function Banner({ message }: { message: string }) {
+export default function Banner({
+  message,
+  bgColor,
+  textColor,
+}: {
+  message: string;
+  bgColor: string;
+  textColor: string;
+}) {
   return (
-    <div className="bg-gold px-4 py-2 text-center text-sm font-semibold text-jetblack">
+    <div
+      className="px-4 py-2 text-center text-sm font-semibold"
+      style={{ backgroundColor: bgColor, color: textColor }}
+    >
       {message}
     </div>
   );
