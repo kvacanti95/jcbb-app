@@ -4,6 +4,14 @@ import { coaches as defaultCoaches, schedule as defaultSchedule } from './site-d
 
 const DAY_ORDER = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
 
+async function ensureColumn(db: PrismaClient, table: string, column: string, definition: string) {
+  const columns = await db.$queryRawUnsafe<{ name: string }[]>(`PRAGMA table_info("${table}")`);
+  const exists = columns.some((c) => c.name === column);
+  if (!exists) {
+    await db.$executeRawUnsafe(`ALTER TABLE "${table}" ADD COLUMN ${definition}`);
+  }
+}
+
 async function createTables(db: PrismaClient) {
   await db.$executeRawUnsafe(`
     CREATE TABLE IF NOT EXISTS "User" (
@@ -11,9 +19,13 @@ async function createTables(db: PrismaClient) {
       "email" TEXT UNIQUE NOT NULL,
       "passwordHash" TEXT NOT NULL,
       "name" TEXT NOT NULL,
+      "role" TEXT NOT NULL DEFAULT 'ADMIN',
       "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
     )
   `);
+  // Existing deployed databases already have a User table without "role" —
+  // CREATE TABLE IF NOT EXISTS is a no-op there, so add it explicitly.
+  await ensureColumn(db, 'User', 'role', `"role" TEXT NOT NULL DEFAULT 'ADMIN'`);
 
   await db.$executeRawUnsafe(`
     CREATE TABLE IF NOT EXISTS "Event" (
@@ -76,6 +88,35 @@ async function createTables(db: PrismaClient) {
       "updatedAt" DATETIME NOT NULL
     )
   `);
+
+  await db.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS "Fighter" (
+      "id" TEXT PRIMARY KEY,
+      "name" TEXT NOT NULL,
+      "weightClass" TEXT NOT NULL,
+      "wins" INTEGER NOT NULL DEFAULT 0,
+      "losses" INTEGER NOT NULL DEFAULT 0,
+      "draws" INTEGER NOT NULL DEFAULT 0,
+      "bio" TEXT NOT NULL,
+      "photoUrl" TEXT,
+      "sortOrder" INTEGER NOT NULL DEFAULT 0,
+      "userId" TEXT UNIQUE,
+      "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      "updatedAt" DATETIME NOT NULL
+    )
+  `);
+
+  await db.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS "Page" (
+      "id" TEXT PRIMARY KEY,
+      "slug" TEXT UNIQUE NOT NULL,
+      "title" TEXT NOT NULL,
+      "body" TEXT NOT NULL,
+      "photoUrl" TEXT,
+      "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      "updatedAt" DATETIME NOT NULL
+    )
+  `);
 }
 
 async function upsertAdminAccounts(db: PrismaClient) {
@@ -94,8 +135,8 @@ async function upsertAdminAccounts(db: PrismaClient) {
     const passwordHash = await bcrypt.hash(account.password, 10);
     await db.user.upsert({
       where: { email: account.email },
-      update: { passwordHash, name: account.name },
-      create: { email: account.email, passwordHash, name: account.name },
+      update: { passwordHash, name: account.name, role: 'ADMIN' },
+      create: { email: account.email, passwordHash, name: account.name, role: 'ADMIN' },
     });
   }
 }

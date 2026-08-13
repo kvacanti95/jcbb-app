@@ -6,9 +6,12 @@ import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { navLinks, site } from '@/lib/site-data';
 
-export default function Navbar() {
+type NavLink = { href: string; label: string };
+
+export default function Navbar({ extraLinks = [] }: { extraLinks?: NavLink[] }) {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const links = [...navLinks, ...extraLinks];
 
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-jetblack/95 backdrop-blur">
@@ -39,7 +42,7 @@ export default function Navbar() {
         </button>
 
         <ul className="hidden items-center gap-8 md:flex">
-          {navLinks.map((link) => {
+          {links.map((link) => {
             const active = pathname === link.href;
             return (
               <li key={link.href}>
@@ -59,7 +62,7 @@ export default function Navbar() {
 
       {open && (
         <ul className="flex flex-col gap-1 border-t border-white/10 bg-jetblack px-4 pb-4 md:hidden">
-          {navLinks.map((link) => {
+          {links.map((link) => {
             const active = pathname === link.href;
             return (
               <li key={link.href}>

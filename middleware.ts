@@ -16,6 +16,13 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
 
+  // FIGHTER accounts can only reach their own profile editor — everything
+  // else under /admin redirects there, enforced here (not just hidden in
+  // the UI) so it can't be bypassed by typing a URL directly.
+  if (token.role === 'FIGHTER' && pathname !== '/admin/my-profile') {
+    return NextResponse.redirect(new URL('/admin/my-profile', request.url));
+  }
+
   return NextResponse.next();
 }
 

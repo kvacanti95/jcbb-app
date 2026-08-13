@@ -6,6 +6,7 @@ import Footer from '@/components/Footer';
 import Banner from '@/components/Banner';
 import { site } from '@/lib/site-data';
 import { getSiteSettings } from '@/lib/settings';
+import { prisma } from '@/lib/db';
 
 const oswald = Oswald({
   subsets: ['latin'],
@@ -34,13 +35,17 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const settings = await getSiteSettings();
+  const [settings, pages] = await Promise.all([
+    getSiteSettings(),
+    prisma.page.findMany({ orderBy: { title: 'asc' }, select: { slug: true, title: true } }),
+  ]);
+  const extraLinks = pages.map((page) => ({ href: `/${page.slug}`, label: page.title }));
 
   return (
     <html lang="en">
       <body className={`${oswald.variable} ${inter.variable} font-body flex min-h-screen flex-col`}>
         {settings.bannerEnabled && <Banner message={settings.bannerMessage} />}
-        <Navbar />
+        <Navbar extraLinks={extraLinks} />
         <main className="flex-1">{children}</main>
         <Footer />
       </body>

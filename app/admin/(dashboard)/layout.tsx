@@ -8,9 +8,14 @@ const adminLinks = [
   { href: '/admin/events', label: 'Events' },
   { href: '/admin/media', label: 'Media' },
   { href: '/admin/coaches', label: 'Coaches' },
+  { href: '/admin/fighters', label: 'Fighters' },
+  { href: '/admin/pages', label: 'Pages' },
   { href: '/admin/schedule', label: 'Schedule' },
+  { href: '/admin/users', label: 'Users' },
   { href: '/admin/settings', label: 'Settings' },
 ];
+
+const fighterLinks = [{ href: '/admin/my-profile', label: 'My Profile' }];
 
 export default async function AdminDashboardLayout({
   children,
@@ -18,6 +23,7 @@ export default async function AdminDashboardLayout({
   children: React.ReactNode;
 }) {
   const session = await getServerSession(authOptions);
+  const links = session?.user?.role === 'FIGHTER' ? fighterLinks : adminLinks;
 
   return (
     <div className="mx-auto flex max-w-6xl flex-col gap-8 px-4 py-10 sm:px-6 md:flex-row">
@@ -29,7 +35,7 @@ export default async function AdminDashboardLayout({
           </p>
         </div>
         <nav className="mt-4 flex flex-row gap-1 overflow-x-auto md:flex-col md:overflow-visible">
-          {adminLinks.map((link) => (
+          {links.map((link) => (
             <Link
               key={link.href}
               href={link.href}

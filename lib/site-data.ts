@@ -19,6 +19,7 @@ export const navLinks = [
   { href: '/classes', label: 'Classes' },
   { href: '/schedule', label: 'Schedule' },
   { href: '/events', label: 'Events' },
+  { href: '/fighters', label: 'Fighters' },
   { href: '/gallery', label: 'Gallery' },
   { href: '/contact', label: 'Contact' },
 ];

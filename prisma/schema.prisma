@@ -7,11 +7,17 @@ datasource db {
   provider = "sqlite"
 }
 
+enum Role {
+  ADMIN
+  FIGHTER
+}
+
 model User {
   id           String   @id @default(cuid())
   email        String   @unique
   passwordHash String
   name         String
+  role         Role     @default(ADMIN)
   createdAt    DateTime @default(now())
 }
 
@@ -70,5 +76,30 @@ model ScheduleClass {
 model SiteSetting {
   key       String   @id
   value     String
+  updatedAt DateTime @updatedAt
+}
+
+model Fighter {
+  id          String   @id @default(cuid())
+  name        String
+  weightClass String
+  wins        Int      @default(0)
+  losses      Int      @default(0)
+  draws       Int      @default(0)
+  bio         String
+  photoUrl    String?
+  sortOrder   Int      @default(0)
+  userId      String?  @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Page {
+  id        String   @id @default(cuid())
+  slug      String   @unique
+  title     String
+  body      String
+  photoUrl  String?
+  createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }

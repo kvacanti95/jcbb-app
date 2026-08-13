@@ -2,16 +2,20 @@ import Link from 'next/link';
 import { prisma } from '@/lib/db';
 
 export default async function AdminDashboardPage() {
-  const [eventCount, mediaCount, coachCount] = await Promise.all([
+  const [eventCount, mediaCount, coachCount, fighterCount, pageCount] = await Promise.all([
     prisma.event.count(),
     prisma.mediaItem.count(),
     prisma.coach.count(),
+    prisma.fighter.count(),
+    prisma.page.count(),
   ]);
 
   const cards = [
     { label: 'Upcoming & Past Events', count: eventCount, href: '/admin/events' },
     { label: 'Photos & Videos', count: mediaCount, href: '/admin/media' },
     { label: 'Coaches', count: coachCount, href: '/admin/coaches' },
+    { label: 'Fighters', count: fighterCount, href: '/admin/fighters' },
+    { label: 'Custom Pages', count: pageCount, href: '/admin/pages' },
   ];
 
   return (
@@ -51,6 +55,21 @@ export default async function AdminDashboardPage() {
           <li>
             <Link href="/admin/coaches" className="text-gold hover:underline">
               Edit a coach bio
+            </Link>
+          </li>
+          <li>
+            <Link href="/admin/fighters/new" className="text-gold hover:underline">
+              Add a fighter to the roster
+            </Link>
+          </li>
+          <li>
+            <Link href="/admin/pages/new" className="text-gold hover:underline">
+              Create a new page
+            </Link>
+          </li>
+          <li>
+            <Link href="/admin/users/new" className="text-gold hover:underline">
+              Add a staff or fighter account
             </Link>
           </li>
         </ul>
