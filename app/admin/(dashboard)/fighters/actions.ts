@@ -73,3 +73,10 @@ export async function deleteFighter(id: string) {
   revalidatePath('/admin/fighters');
   revalidatePath('/fighters');
 }
+
+export async function toggleFighterHidden(id: string, hidden: boolean) {
+  await prisma.fighter.update({ where: { id }, data: { hidden } });
+
+  revalidatePath('/admin/fighters');
+  revalidatePath('/fighters');
+}

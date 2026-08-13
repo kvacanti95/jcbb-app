@@ -11,7 +11,10 @@ export const metadata: Metadata = {
 export const dynamic = 'force-dynamic';
 
 export default async function FightersPage() {
-  const fighters = await prisma.fighter.findMany({ orderBy: { sortOrder: 'asc' } });
+  const fighters = await prisma.fighter.findMany({
+    where: { hidden: false },
+    orderBy: { sortOrder: 'asc' },
+  });
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6">

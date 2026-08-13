@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { prisma } from '@/lib/db';
-import { deleteFighter } from './actions';
+import { deleteFighter, toggleFighterHidden } from './actions';
 
 export default async function AdminFightersPage() {
   const fighters = await prisma.fighter.findMany({ orderBy: { sortOrder: 'asc' } });
@@ -24,7 +24,14 @@ export default async function AdminFightersPage() {
             className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-white/10 bg-white/5 p-4"
           >
             <div>
-              <p className="font-semibold text-white">{fighter.name}</p>
+              <p className="flex items-center gap-2 font-semibold text-white">
+                {fighter.name}
+                {fighter.hidden && (
+                  <span className="rounded-full bg-white/10 px-2 py-0.5 text-xs font-normal text-white/50">
+                    Hidden
+                  </span>
+                )}
+              </p>
               <p className="text-sm text-white/60">
                 {fighter.weightClass} &middot; {fighter.wins}-{fighter.losses}-{fighter.draws}
                 {fighter.kos > 0 && ` (${fighter.kos} KOs)`}
@@ -37,6 +44,11 @@ export default async function AdminFightersPage() {
               >
                 Edit
               </Link>
+              <form action={toggleFighterHidden.bind(null, fighter.id, !fighter.hidden)}>
+                <button type="submit" className="text-sm text-white/70 hover:underline">
+                  {fighter.hidden ? 'Show' : 'Hide'}
+                </button>
+              </form>
               <form action={deleteFighter.bind(null, fighter.id)}>
                 <button type="submit" className="text-sm text-red-400 hover:underline">
                   Delete

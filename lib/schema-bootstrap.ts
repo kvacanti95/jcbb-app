@@ -104,15 +104,17 @@ async function createTables(db: PrismaClient) {
       "kos" INTEGER NOT NULL DEFAULT 0,
       "bio" TEXT NOT NULL,
       "photoUrl" TEXT,
+      "hidden" INTEGER NOT NULL DEFAULT 0,
       "sortOrder" INTEGER NOT NULL DEFAULT 0,
       "userId" TEXT UNIQUE,
       "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
       "updatedAt" DATETIME NOT NULL
     )
   `);
-  // Fighter already existed before "kos" was added — same in-place
-  // migration approach as User.role above.
+  // Fighter already existed before "kos"/"hidden" were added — same
+  // in-place migration approach as User.role above.
   await ensureColumn(db, 'Fighter', 'kos', `"kos" INTEGER NOT NULL DEFAULT 0`);
+  await ensureColumn(db, 'Fighter', 'hidden', `"hidden" INTEGER NOT NULL DEFAULT 0`);
 
   await db.$executeRawUnsafe(`
     CREATE TABLE IF NOT EXISTS "Page" (
