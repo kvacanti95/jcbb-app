@@ -68,8 +68,14 @@ export default async function Footer() {
         </div>
       </div>
 
-      <div className="border-t border-white/10 py-4 text-center text-xs text-white/40">
-        © {new Date().getFullYear()} {site.name}. Founded {site.founded}. All rights reserved.
+      <div className="flex flex-col items-center gap-1 border-t border-white/10 py-4 text-center text-xs text-white/40 sm:flex-row sm:justify-center sm:gap-3">
+        <span>
+          © {new Date().getFullYear()} {site.name}. Founded {site.founded}. All rights reserved.
+        </span>
+        <span className="hidden sm:inline">&middot;</span>
+        <Link href="/admin/login" className="hover:text-gold">
+          Team Login
+        </Link>
       </div>
     </footer>
   );
